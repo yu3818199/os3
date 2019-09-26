@@ -1,5 +1,7 @@
 OS/3 operating system source code . <br>
 <br>
+written by yuqiancheng @2019
+<br>
 img/ <br>
 fdisk.img     #编译打包的磁盘镜像文件，可导入U盘启动系统 <br>
 <br>
