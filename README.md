@@ -8,10 +8,10 @@ fdisk.img     #编译打包的磁盘镜像文件，可导入U盘启动系统 <br
 src/ <br>
 mbr.asm   #主引导程序 <br>
 boot.asm  #主控程序 <br>
-dec.asm  #数值转换
-disk.asm #磁盘管理
-memory.asm #内存管理
-screen.asm #屏幕控制
+dec.asm  #数值转换 <br>
+disk.asm #磁盘管理 <br>
+memory.asm #内存管理 <br>
+screen.asm #屏幕控制 <br>
 <br>
 tools/ <br>
 bmptotxt.cpp  #将图片转换为文本 <br>
