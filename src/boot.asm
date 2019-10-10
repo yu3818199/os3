@@ -48,6 +48,14 @@ org 0x500
 ;  磁头    柱面   扇区          用途
 ;   0       0      1          MBR程序区
 ;   0       0     2-9         主控程序区(8个扇区)
+;   0       0      10         数据分区表
+;------------------------------------------------------------------
+
+;------------------------------------------------------------------
+;  数据分区表说明
+;  (每个文件分配区占用32字节，每个扇区支持16个文件)
+;  2字节开始+16字节文件名+8字节LBA开始地址+4字节读取扇区数+2字节结束
+;
 ;------------------------------------------------------------------
 
 ; 保存启动盘标志
@@ -222,19 +230,6 @@ command_check:
   command_check_enter:
 
   ;--------------------------------------------------------
-  ; 显示多彩屏
-  mov si,command
-  mov di,command_test
-  mov cx,[cs:command_test_len]
-  call _memcmp
-  cmp ax,0
-  jnz command_check_color
-  call display_Multicolor
-  mov ax,1 ; 需恢复主屏
-  jmp command_check_ok
-  command_check_color:
-
-  ;--------------------------------------------------------
   ; 显示磁盘信息
   mov si,command
   mov di,command_diskinfo
@@ -242,13 +237,21 @@ command_check:
   call _memcmp
   cmp ax,0
   jnz command_check_diskinfo
-  call get_diskinfo
+  call display_diskinfo
   mov si,title_diskinfo
   call show_title
   mov ax,0 ; 无需恢复主屏
   jmp command_check_ok
   command_check_diskinfo:
-
+ 
+  ;--------------------------------------------------------
+  ; 无匹配的命令从文件中查询
+  call load_file
+  cmp ax,0
+  jnz command_check_load_file
+  mov ax,1 ; 需恢复主屏
+  jmp command_check_ok
+  command_check_load_file:
 
   ;--------------------------------------------------------
   ; 无匹配的命令
@@ -391,7 +394,82 @@ command_buf_end:
   call command_display
 
 ret;
+;------------------------------------------------------------------------------
+; 从文件分配表中查询匹配文件并加载内存执行
+; 返回值:ax 0成功 1失败
+load_file:
 
+  pusha
+
+  mov ax,0
+  mov ds,ax
+  mov es,ax
+
+  ; 文件分配表加载在0x1500
+  mov di,0x1500
+
+  ;一个扇区最多支持16个文件
+  mov cx,16
+
+ ; 循环读取文件分配表
+ load_file_load:
+ 
+  push cx
+  push di
+
+  ; 空表则跳转
+  mov ax,[es:di]
+  cmp ax,0xcccc
+  jnz load_file_load_loop
+
+  add di,2 ; 偏移2位指向文件名
+  mov si,di
+  call _strlen
+  mov cx,ax
+
+  mov si,command
+  call _memcmp
+
+  cmp ax,0
+  jnz load_file_load_loop
+
+  mov ax,0
+  mov ds,ax
+  add di,16 ; 偏移16位指向LBA
+  mov bx,[es:di]
+  add di,8 ; 偏移8位指向扇区
+  mov cx,[es:di]
+  mov si,0x7e00
+  
+  call read_disk_LBA
+  
+  pop di
+  pop cx
+
+  call 0x7e00
+  
+  
+  popa
+  mov ax,0
+  ret
+
+load_file_load_loop:
+
+  pop di
+  pop cx
+  add di,32 ; 移到下一个文件表
+
+  loop load_file_load
+
+  popa
+  mov ax,1
+
+ret
+
+;------------------------------------------------------------------------------
+;文件分配表
+filetable:
+times 32 db 0x0
 
 ;--------------------------------------------------------------------------
 ;启动盘
@@ -405,7 +483,7 @@ title:
 db ' Welcome to OS/3 System , Written by YuQiancheng .                              '
 
 title_help:
-db ' (support command : poweroff / reboot / test / diskinfo)                        '
+db ' (support command : poweroff / reboot / diskinfo / [filename] )                 '
 
 title_restart:
 db ' Restarting this system !                                                       '
@@ -414,7 +492,7 @@ title_shutdown:
 db ' Shutting down this system !                                                    '
 
 title_invalid:
-db ' Invalid command ! (support command : poweroff / reboot / test / diskinfo)      '
+db ' Invalid command ! (support command: poweroff / reboot / diskinfo / [filename] )'
 
 ;------------------------------------------------------------------
 command: times 50 db 0x00
@@ -429,9 +507,6 @@ command_reboot_len: dw ($-command_reboot)
 command_help: db 'help',13
 command_help_len: dw ($-command_help)
 
-command_test: db 'test',13
-command_test_len: dw ($-command_test)
-
 command_enter: db 13
 command_enter_len: dw ($-command_enter)
 
@@ -441,5 +516,5 @@ command_diskinfo_len: dw ($-command_diskinfo)
 ;------------------------------------------------------------------
 
 ; 本程序分配4KB空间
-times 512*8-($-$$) db 0x00
+times 512*8-($-$$) db 0xff
 
