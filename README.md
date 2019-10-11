@@ -3,7 +3,8 @@ OS/3 operating system source code . <br>
 written by yuqiancheng @2019 <br>
 <br>
 img/ <br>
-hdisk.img     #编译打包的磁盘镜像文件，可导入U盘启动系统 <br>
+hdisk.img   #编译打包的磁盘镜像文件，可导入U盘启动系统 <br>
+录像.avi    #登录执行命令等 <br>
 <br>
 src/ <br>
 mbr.asm   #主引导程序 <br>
