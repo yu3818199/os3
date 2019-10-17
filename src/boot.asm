@@ -71,6 +71,14 @@ org 0x500
 call _display_main
 
 ;------------------------------------------------------------------
+; 注册中断处理程序的入口地址
+mov ax,0
+mov ds,ax
+mov bx,0x1c*4  ; 1c中断
+mov word [ds:bx],int_1c
+mov word [ds:bx+2],0x00
+
+;------------------------------------------------------------------
 ;进入主控程序
 _main_jmp:
   call _main
@@ -120,17 +128,47 @@ _display_main:
   mov si,title
   call show_title
 
-  ;显示日期
-  call dsp_datetime
-  
   popa
   
 ret
 
 ;------------------------------------------------------------------
+; 中断处理程序
+int_1c:
+
+   mov ax,[cs:int_1c_num]
+   inc ax
+   mov [cs:int_1c_num],ax
+
+   cmp ax,20
+   jnz int_1c_end
+
+   mov ax,0
+   mov [cs:int_1c_num],ax
+
+   ; 在屏幕右下角显示日期时间
+   pusha
+   call dsp_datetime
+   popa
+
+ int_1c_end:
+
+
+iret
+
+int_1c_num: dw 0 
+
+;------------------------------------------------------------------
 ; 关机
 ; 输入输出参数: 无
 power_off:
+
+  ; 注册中断处理程序的入口地址
+  mov ax,0
+  mov ds,ax
+  mov bx,0x1c*4  ; 1c中断
+  mov word [ds:bx],int_1c_end
+  mov word [ds:bx+2],0x00
 
   ;显示关机提示
   mov si,title_shutdown
@@ -160,6 +198,13 @@ ret
 ; 重启
 ; 输入输出参数: 无
 reboot:
+
+  ; 注册中断处理程序的入口地址
+  mov ax,0
+  mov ds,ax
+  mov bx,0x1c*4  ; 1c中断
+  mov word [ds:bx],int_1c_end
+  mov word [ds:bx+2],0x00
 
   ;显示重启提示
   mov si,title_restart
@@ -343,10 +388,6 @@ command_buf:
 
   command_buf_1:
 
-   pusha
-   call dsp_datetime
-   popa
-
    ; 读键盘缓冲
    mov ah,0
    int 16h
@@ -470,11 +511,6 @@ ret
 ;文件分配表
 filetable:
 times 32 db 0x0
-
-;--------------------------------------------------------------------------
-;启动盘
-
-start_disk: db 0x00
 
 ;--------------------------------------------------------------------------
 ;标题栏

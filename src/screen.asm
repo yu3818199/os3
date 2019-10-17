@@ -61,6 +61,68 @@ clear_screen:
 ret
 
 ;------------------------------------------------------------------
+; 在指定的位置打印字符
+; 输入参数 ch=行 cl=列 dh=字符 dl=样式
+;
+_putchar:
+
+   pusha
+   push dx
+   ;赋值显卡段地址
+   mov ax,0xb800
+   mov ds,ax
+   ;计算偏移位 (ch*80+cl)*2
+   xor ax,ax
+   mov al,ch
+   mov bx,80
+   mul bx     ; ch*80
+   mov ch,0
+   add ax,cx  ; ch*80+cl
+   add ax,ax  ; (ch*80+cl)*2
+   mov bx,ax
+   pop dx
+   mov byte [ds:bx],dh
+   mov byte [ds:bx+1],dl
+
+   popa
+ret
+
+;------------------------------------------------------------------
+; 在指定的位置打印字符串
+; 输入参数 ch=行 cl=列 cs:si=字符对应地址 dl=样式
+;
+_putstring:
+
+   pusha
+   push dx
+   ;赋值显卡段地址
+   mov ax,0xb800
+   mov ds,ax
+   ;计算偏移位 (ch*80+cl)*2
+   xor ax,ax
+   mov al,ch
+   mov bx,80
+   mul bx     ; ch*80
+   mov ch,0
+   add ax,cx  ; ch*80+cl
+   add ax,ax  ; (ch*80+cl)*2
+   mov bx,ax
+   pop dx
+  _putstring_1:
+   mov dh,[cs:si]
+   cmp dh,0
+   jz _putstring_2
+   mov byte [ds:bx],dh
+   mov byte [ds:bx+1],dl
+   inc si
+   add bx,2
+   jmp _putstring_1
+  _putstring_2:
+
+   popa
+ret
+
+;------------------------------------------------------------------
 ;全屏显示os/3字符图片
 ; 输入输出参数: 无
 show_CharPictures:
@@ -221,11 +283,10 @@ dsp_datetime:
    mov ds,bx;
    
    ; 初始化
-   mov si,message_time_end-1-3
+   mov si,message_time_end-1
 
    ; 显示字符数
    mov cx,[cs:message_time_len]
-   sub cx,3
 
    ; 初始定位在最后一行最后一列
    mov bx,25*80*2-1
@@ -338,43 +399,6 @@ power_off_diskplay_sleep:
  loop power_off_diskplay_sleep_1
  popa
 ret
-
-;------------------------------------------------------------------
-; 显示动态屏幕
-; 输入输出参数: 无
-display_Multicolor:
-
-   pusha
-   push ds
-
-   ;赋值显卡段地址
-   mov bx,0xb800
-   mov ds,bx
-
-   mov dx,1234h
-   
-   ; 循环1万次
-   mov cx,10000
-
-   ; 显示随机字符和颜色
- Multicolor1:
-   push cx
-   mov cx,25*80-1
-  Multicolor2:
-   mov bx,cx
-   add bx,bx ; 计算地址
-   add dx,bx ; 模糊显示内容
-   mov byte [ds:bx],dh
-   mov byte [ds:bx+1],dl
-  loop Multicolor2
-   pop cx
- loop Multicolor1
-
-   pop ds
-   popa
-
-ret
-
 
 
 ;--------------------------------------------------------------------------------
