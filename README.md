@@ -3,7 +3,7 @@
 Welcome here. This is a personal work to verify the implementation details of operating system technology.The main development language is assembly, and some tools use C language.If you are interested, you can leave a message on issues.
 </p>
 <p>
-written by yuqiancheng @2019
+![Image](https://github.com/yu3818199/os3/blob/master/img/mainpage.gif)
 </p>
 <hr>
 <table>
