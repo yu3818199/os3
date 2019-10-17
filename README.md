@@ -1,6 +1,10 @@
-OS/3 operating system .
+<h1>OS/3 operating system</h1>
+<p>
+Welcome here. This is a personal work to verify the implementation details of operating system technology.
+</p>
 <p>
 written by yuqiancheng @2019
+</p>
 <hr>
 <table>
   <tr>
