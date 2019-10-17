@@ -4,7 +4,7 @@ written by yuqiancheng @2019
 <hr>
 <table>
   <tr>
-    <td><strong>filename</strong>
+    <td width=200><strong>filename</strong>
     </td><td><strong>memo</strong></td></tr>
 <tr>
   <td>img/mainpage.gif</td>
