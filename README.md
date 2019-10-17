@@ -1,6 +1,6 @@
 <h1>OS/3 operating system</h1>
 <p>
-Welcome here. This is a personal work to verify the implementation details of operating system technology.  The main programming language is assembly, and some tools use C .  please feel free to leave your message, I will respond as soon as possible .
+Welcome here. This is a experimental work to verify the implementation details of operating system technology.  The main programming language is assembly, and some tools use C .  please feel free to leave your message, I will respond as soon as possible .
 </p>
 
 ![Image](https://github.com/yu3818199/os3/blob/master/img/mainpage.gif)
