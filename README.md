@@ -1,6 +1,6 @@
 <h1>OS/3 operating system</h1>
 <p>
-Welcome here. This is a experimental work to verify the implementation details of operating system technology.  The main programming language is assembly, and some tools use C .  please feel free to leave your message, I will respond as soon as possible .
+Hi guys! welcome to visit my OS/3 program.   OS/3 is an operation system mainly programmed in Assembly language(partly in C）. The aim of this program is to verify the implementation details of operation system technologies (how does an operation system work).  Comments and questions are warmly welcomed.
 </p>
 
 ![Image](https://github.com/yu3818199/os3/blob/master/img/mainpage.gif)
