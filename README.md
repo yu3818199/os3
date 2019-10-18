@@ -3,7 +3,7 @@
 Hi guys! welcome to visit my OS/3 program.   OS/3 is an operation system mainly programmed in Assembly language (partly in C）. The aim of this program is to verify the implementation details of operation system technologies .  Comments and questions are warmly welcomed.
 </p>
 <p>
-大家好！欢迎访问OS/3。OS/3是一个以汇编语言为主（部分用c语言）编写的操作系统。本程序的目的是验证操作系统的技术实现细节。欢迎在issues中留言，如有修改意见请提交pull requests。
+大家好！欢迎访问OS/3。OS/3是一个以汇编语言为主（部分用c语言）编写的操作系统。编写目的是验证操作系统的技术实现细节。欢迎在issues中留言，如有修改意见请提交pull requests。
 </p>
 
 ![Image](https://github.com/yu3818199/os3/blob/master/img/mainpage.gif)
